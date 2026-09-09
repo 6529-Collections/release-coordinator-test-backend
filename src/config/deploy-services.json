@@ -1,0 +1,21 @@
+{
+  "services": [
+    {
+      "name": "api",
+      "allowed_environments": [
+        "staging",
+        "prod"
+      ],
+      "default_dependencies": [
+        "dbMigrationsLoop"
+      ]
+    },
+    {
+      "name": "dbMigrationsLoop",
+      "allowed_environments": [
+        "staging"
+      ],
+      "default_dependencies": []
+    }
+  ]
+}
