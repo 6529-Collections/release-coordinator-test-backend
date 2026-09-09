@@ -13,7 +13,8 @@
     {
       "name": "dbMigrationsLoop",
       "allowed_environments": [
-        "staging"
+        "staging",
+        "prod"
       ],
       "default_dependencies": []
     }
