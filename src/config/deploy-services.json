@@ -7,6 +7,16 @@
         "prod"
       ],
       "default_dependencies": [
+        "worker"
+      ]
+    },
+    {
+      "name": "worker",
+      "allowed_environments": [
+        "staging",
+        "prod"
+      ],
+      "default_dependencies": [
         "dbMigrationsLoop"
       ]
     },
