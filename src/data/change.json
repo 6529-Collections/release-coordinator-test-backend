@@ -1,5 +1,5 @@
 {
-  "id": "baseline",
-  "increment": 0,
+  "id": "add-display-value",
+  "increment": 5,
   "fail_after_schema": false
 }
