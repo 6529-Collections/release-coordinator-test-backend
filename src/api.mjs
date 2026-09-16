@@ -1,4 +1,4 @@
 export function run({ row }) {
-  const value = Number(row.display_value);
+  const value = Number(row.value);
   return { id: row.id, value };
 }
