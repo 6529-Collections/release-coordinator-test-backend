@@ -1,4 +1,1 @@
-export function run({ row }) {
-  const value = row.value * 2;
-  return { id: row.id, value, display_value: value };
-}
+export function run({ row }) { return { id: row.id, value: row.value * 2 }; }
