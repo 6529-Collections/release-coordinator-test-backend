@@ -1,0 +1,10 @@
+{
+  "name": "release-coordinator-sandbox-monitoring",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ../../coordinator/sandbox/application-build.mjs monitoring",
+    "generate": "node ../../coordinator/sandbox/application-build.mjs monitoring --generate"
+  }
+}

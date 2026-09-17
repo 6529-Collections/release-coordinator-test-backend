@@ -20,6 +20,14 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Run application checks
         run: npm test
+      - name: Check monitoring package
+        if: hashFiles('ops/monitoring/package.json') != ''
+        working-directory: ops/monitoring
+        env:
+          SANDBOX_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          npm ci --ignore-scripts
+          npm run build
       - name: Build application artifact
         env:
           SANDBOX_SOURCE_COMMIT: ${{ github.sha }}
