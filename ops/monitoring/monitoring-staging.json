@@ -1,0 +1,46 @@
+{
+  "environment": "staging",
+  "functions": [
+    "api",
+    "dbMigrationsLoop",
+    "worker"
+  ],
+  "alarms": [
+    {
+      "name": "staging-api-Errors",
+      "function": "api",
+      "metric": "Errors",
+      "threshold": 1
+    },
+    {
+      "name": "staging-api-Throttles",
+      "function": "api",
+      "metric": "Throttles",
+      "threshold": 5
+    },
+    {
+      "name": "staging-dbMigrationsLoop-Errors",
+      "function": "dbMigrationsLoop",
+      "metric": "Errors",
+      "threshold": 1
+    },
+    {
+      "name": "staging-dbMigrationsLoop-Throttles",
+      "function": "dbMigrationsLoop",
+      "metric": "Throttles",
+      "threshold": 5
+    },
+    {
+      "name": "staging-worker-Errors",
+      "function": "worker",
+      "metric": "Errors",
+      "threshold": 1
+    },
+    {
+      "name": "staging-worker-Throttles",
+      "function": "worker",
+      "metric": "Throttles",
+      "threshold": 5
+    }
+  ]
+}
