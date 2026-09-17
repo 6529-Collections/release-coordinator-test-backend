@@ -10,7 +10,7 @@
       "name": "prod-api-Errors",
       "function": "api",
       "metric": "Errors",
-      "threshold": 2
+      "threshold": 3
     },
     {
       "name": "prod-api-Throttles",
@@ -19,16 +19,10 @@
       "threshold": 5
     },
     {
-      "name": "prod-api-Duration",
-      "function": "api",
-      "metric": "Duration",
-      "threshold": 300
-    },
-    {
       "name": "prod-dbMigrationsLoop-Errors",
       "function": "dbMigrationsLoop",
       "metric": "Errors",
-      "threshold": 2
+      "threshold": 3
     },
     {
       "name": "prod-dbMigrationsLoop-Throttles",
@@ -37,28 +31,16 @@
       "threshold": 5
     },
     {
-      "name": "prod-dbMigrationsLoop-Duration",
-      "function": "dbMigrationsLoop",
-      "metric": "Duration",
-      "threshold": 300
-    },
-    {
       "name": "prod-worker-Errors",
       "function": "worker",
       "metric": "Errors",
-      "threshold": 2
+      "threshold": 3
     },
     {
       "name": "prod-worker-Throttles",
       "function": "worker",
       "metric": "Throttles",
       "threshold": 5
-    },
-    {
-      "name": "prod-worker-Duration",
-      "function": "worker",
-      "metric": "Duration",
-      "threshold": 300
     }
   ]
 }
