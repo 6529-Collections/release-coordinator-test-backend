@@ -10,7 +10,7 @@
       "name": "staging-api-Errors",
       "function": "api",
       "metric": "Errors",
-      "threshold": 2
+      "threshold": 3
     },
     {
       "name": "staging-api-Throttles",
@@ -19,16 +19,10 @@
       "threshold": 5
     },
     {
-      "name": "staging-api-Duration",
-      "function": "api",
-      "metric": "Duration",
-      "threshold": 300
-    },
-    {
       "name": "staging-dbMigrationsLoop-Errors",
       "function": "dbMigrationsLoop",
       "metric": "Errors",
-      "threshold": 2
+      "threshold": 3
     },
     {
       "name": "staging-dbMigrationsLoop-Throttles",
@@ -37,28 +31,16 @@
       "threshold": 5
     },
     {
-      "name": "staging-dbMigrationsLoop-Duration",
-      "function": "dbMigrationsLoop",
-      "metric": "Duration",
-      "threshold": 300
-    },
-    {
       "name": "staging-worker-Errors",
       "function": "worker",
       "metric": "Errors",
-      "threshold": 2
+      "threshold": 3
     },
     {
       "name": "staging-worker-Throttles",
       "function": "worker",
       "metric": "Throttles",
       "threshold": 5
-    },
-    {
-      "name": "staging-worker-Duration",
-      "function": "worker",
-      "metric": "Duration",
-      "threshold": 300
     }
   ]
 }
