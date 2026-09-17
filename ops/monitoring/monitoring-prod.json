@@ -10,7 +10,7 @@
       "name": "prod-api-Errors",
       "function": "api",
       "metric": "Errors",
-      "threshold": 1
+      "threshold": 3
     },
     {
       "name": "prod-api-Throttles",
@@ -22,7 +22,7 @@
       "name": "prod-dbMigrationsLoop-Errors",
       "function": "dbMigrationsLoop",
       "metric": "Errors",
-      "threshold": 1
+      "threshold": 3
     },
     {
       "name": "prod-dbMigrationsLoop-Throttles",
@@ -34,7 +34,7 @@
       "name": "prod-worker-Errors",
       "function": "worker",
       "metric": "Errors",
-      "threshold": 1
+      "threshold": 3
     },
     {
       "name": "prod-worker-Throttles",

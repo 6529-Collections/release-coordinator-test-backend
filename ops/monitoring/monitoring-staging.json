@@ -10,7 +10,7 @@
       "name": "staging-api-Errors",
       "function": "api",
       "metric": "Errors",
-      "threshold": 1
+      "threshold": 3
     },
     {
       "name": "staging-api-Throttles",
@@ -22,7 +22,7 @@
       "name": "staging-dbMigrationsLoop-Errors",
       "function": "dbMigrationsLoop",
       "metric": "Errors",
-      "threshold": 1
+      "threshold": 3
     },
     {
       "name": "staging-dbMigrationsLoop-Throttles",
@@ -34,7 +34,7 @@
       "name": "staging-worker-Errors",
       "function": "worker",
       "metric": "Errors",
-      "threshold": 1
+      "threshold": 3
     },
     {
       "name": "staging-worker-Throttles",
