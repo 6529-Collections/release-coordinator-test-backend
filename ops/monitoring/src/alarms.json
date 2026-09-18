@@ -2,7 +2,7 @@
   "alarms": [
     {
       "metric": "Errors",
-      "threshold": 3
+      "threshold": 1
     },
     {
       "metric": "Throttles",
