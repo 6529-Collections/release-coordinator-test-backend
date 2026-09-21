@@ -8,6 +8,11 @@ The repository also exposes the Coordinator-facing workflow contract used by the
 - `deploy-operational-monitoring.yml` keeps the real monitoring workflow name, `environment` and `commit_sha` inputs, main-only rule and concurrency group.
 - Both workflows build the small sample packages and publish `fake-deployment-evidence-v1` artifacts tied to the exact source commit and workflow run.
 
+The monitoring workflow also honors the sample package's reviewed
+`fail_environment` value. This gives the Coordinator one controlled workflow
+failure for recovery acceptance; it does not contact or alter a monitoring
+service.
+
 These workflows never use AWS, real services, product databases, monitoring accounts, or product secrets. The older `sandbox-release.yml` remains available while the Coordinator is taught to use the mirrored interface. Its `worker` fixture remains sandbox-only; mirrored dispatches use the real backend service names.
 
 The coordinator directory is generated from the standalone Coordinator; edit the source project and republish the bundle instead of maintaining a second implementation.
