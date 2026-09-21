@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { isDeepStrictEqual } from 'node:util';
 import { parse } from 'yaml';
 import { checkSample } from '../coordinator/sandbox/check.mjs';
+import { verifyControlledMonitoringDeploy } from './controlled-monitoring-deploy.mjs';
 
 const workflow = async (name) =>
   parse(await readFile(new URL(`../.github/workflows/${name}`, import.meta.url), 'utf8'));
@@ -72,6 +73,27 @@ same(
   'monitoring lock'
 );
 same(monitoring.jobs.monitoring.if, "github.ref == 'refs/heads/main'", 'monitoring main rule');
+const controlledFailure = monitoring.jobs.monitoring.steps.find(
+  (step) => step.name === 'Apply the controlled sample monitoring switch'
+);
+if (
+  controlledFailure?.env?.ENVIRONMENT !== '${{ inputs.environment }}' ||
+  controlledFailure.run !==
+    'node scripts/controlled-monitoring-deploy.mjs ops/monitoring/dist/deploy.json'
+)
+  throw new Error('The controlled sample monitoring failure step is missing.');
+same(
+  verifyControlledMonitoringDeploy({ fail_environment: null }, 'staging'),
+  { environment: 'staging', allowed: true },
+  'controlled monitoring pass'
+);
+let failed = false;
+try {
+  verifyControlledMonitoringDeploy({ fail_environment: 'staging' }, 'staging');
+} catch (error) {
+  failed = error.message === 'Controlled sample monitoring deployment failure for staging.';
+}
+if (!failed) throw new Error('The controlled sample monitoring failure did not stop deployment.');
 
 const monitoringPackage = JSON.parse(
   await readFile(new URL('../ops/monitoring/package.json', import.meta.url), 'utf8')

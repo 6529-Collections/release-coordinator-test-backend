@@ -51,6 +51,10 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npm run build
+      - name: Apply the controlled sample monitoring switch
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: node scripts/controlled-monitoring-deploy.mjs ops/monitoring/dist/deploy.json
       - name: Record the fake monitoring deployment
         env:
           ENVIRONMENT: ${{ inputs.environment }}
