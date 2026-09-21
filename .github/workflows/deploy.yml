@@ -231,7 +231,7 @@ jobs:
       - name: Upload fake service deployment evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: fake-backend-${{ inputs.environment }}-${{ inputs.service }}-${{ github.run_id }}
+          name: fake-backend-${{ github.event.inputs.environment }}-${{ github.event.inputs.service }}-${{ github.run_id }}
           path: fake-deployment
           if-no-files-found: error
           retention-days: 30

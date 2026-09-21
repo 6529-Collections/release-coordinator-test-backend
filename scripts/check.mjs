@@ -1,28 +1,81 @@
 import { readFile } from 'node:fs/promises';
+import { parse } from 'yaml';
 import { checkSample } from '../coordinator/sandbox/check.mjs';
 
-const contracts = {
-  'deploy.yml': [
-    'name: Deploy a service',
-    'expected_source_sha:',
-    'db_schema_scope:',
-    'release_note_groups:',
-    'group: deploy-control-${{ github.event.inputs.environment }}',
-    'name: Build and deploy ${{ github.event.inputs.service }} to ${{ github.event.inputs.environment }}'
-  ],
-  'deploy-operational-monitoring.yml': [
-    'name: Deploy operational monitoring',
-    'commit_sha:',
-    'group: operational-monitoring-${{ inputs.environment }}'
-  ]
+const workflow = async (name) =>
+  parse(await readFile(new URL(`../.github/workflows/${name}`, import.meta.url), 'utf8'));
+const same = (actual, expected, label) => {
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`${label} no longer matches the mirrored workflow contract.`);
 };
 
-for (const [name, required] of Object.entries(contracts)) {
-  const workflow = await readFile(new URL(`../.github/workflows/${name}`, import.meta.url), 'utf8');
-  for (const text of required) {
-    if (!workflow.includes(text))
-      throw new Error(`${name} no longer mirrors required contract text: ${text}`);
-  }
-}
+const deploy = await workflow('deploy.yml');
+same(deploy.name, 'Deploy a service', 'service workflow name');
+same(
+  Object.keys(deploy.on.workflow_dispatch.inputs),
+  [
+    'environment',
+    'service',
+    'expected_source_sha',
+    'db_schema_scope',
+    'membership_runtime_mode',
+    'membership_source_tracking_mode',
+    'membership_read_mode',
+    'membership_shadow_mode',
+    'membership_reader_profile_ids',
+    'membership_reader_coverage_revision',
+    'membership_worker_mapping_enabled',
+    'membership_dispatch_schedule_enabled',
+    'release_pull_request',
+    'release_note_publish',
+    'release_group_services',
+    'release_note_groups',
+    'release_note_opt_out'
+  ],
+  'service dispatch inputs'
+);
+same(
+  deploy.concurrency.group,
+  'deploy-control-${{ github.event.inputs.environment }}',
+  'service environment lock'
+);
+same(
+  deploy.jobs['build-and-deploy'].name,
+  'Build and deploy ${{ github.event.inputs.service }} to ${{ github.event.inputs.environment }}',
+  'service deploy job'
+);
+same(
+  deploy.jobs['build-and-deploy'].concurrency.group,
+  'deploy-service-${{ github.event.inputs.environment }}-${{ github.event.inputs.service }}',
+  'individual service lock'
+);
+const inputCheck = deploy.jobs['build-and-deploy'].steps.find(
+  (step) => step.name === 'Validate dispatch inputs before using code'
+);
+if (
+  !inputCheck?.run.includes('test "$GITHUB_REF" = refs/heads/1a-staging') ||
+  !inputCheck.run.includes('test "$GITHUB_REF" = refs/heads/main')
+)
+  throw new Error('Service deployment branch guards are missing.');
+
+const monitoring = await workflow('deploy-operational-monitoring.yml');
+same(monitoring.name, 'Deploy operational monitoring', 'monitoring workflow name');
+same(
+  Object.keys(monitoring.on.workflow_dispatch.inputs),
+  ['environment', 'commit_sha'],
+  'monitoring inputs'
+);
+same(
+  monitoring.concurrency.group,
+  'operational-monitoring-${{ inputs.environment }}',
+  'monitoring lock'
+);
+same(monitoring.jobs.monitoring.if, "github.ref == 'refs/heads/main'", 'monitoring main rule');
+
+const monitoringPackage = JSON.parse(
+  await readFile(new URL('../ops/monitoring/package.json', import.meta.url), 'utf8')
+);
+if (monitoringPackage.scripts?.build !== 'node ../../coordinator/sandbox/application-build.mjs monitoring')
+  throw new Error('The sample monitoring build entry point is missing.');
 
 await checkSample('backend');

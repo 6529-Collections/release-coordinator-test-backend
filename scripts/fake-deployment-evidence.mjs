@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { isDeepStrictEqual } from "node:util";
 import { validateReleaseBuild } from "../coordinator/src/release-contract.mjs";
 import { verifyApplicationBuild } from "../coordinator/sandbox/application-build.mjs";
 
@@ -64,7 +65,7 @@ export async function verifyFakeDeploymentEvidence(input) {
     )
   };
   const evidence = JSON.parse(await readFile(input.evidencePath, "utf8"));
-  if (JSON.stringify(evidence) !== JSON.stringify(wanted))
+  if (!isDeepStrictEqual(evidence, wanted))
     throw new Error("Fake deployment evidence does not match the selected run.");
   return evidence;
 }
@@ -73,8 +74,12 @@ const direct =
   process.argv[1] &&
   pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 if (direct) {
-  const [command, role, environment, sourceSha, workflowRunId, workflowPath, unitValue, manifestPath, evidencePath] =
-    process.argv.slice(2);
+  const args = process.argv.slice(2);
+  if (args.length !== 9)
+    throw new Error(
+      "Expected command, role, environment, source SHA, run ID, workflow path, unit, build manifest and evidence path."
+    );
+  const [command, role, environment, sourceSha, workflowRunId, workflowPath, unitValue, manifestPath, evidencePath] = args;
   const input = {
     role,
     environment,
