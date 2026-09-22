@@ -1,5 +1,5 @@
 {
-  "id": "sandbox-database-release-20260916",
-  "increment": 5,
+  "id": "current-sandbox-database-20260922",
+  "increment": 6,
   "fail_after_schema": false
 }
