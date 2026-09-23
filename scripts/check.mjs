@@ -64,7 +64,7 @@ const monitoring = await workflow('deploy-operational-monitoring.yml');
 same(monitoring.name, 'Deploy operational monitoring', 'monitoring workflow name');
 same(
   Object.keys(monitoring.on.workflow_dispatch.inputs),
-  ['environment', 'commit_sha'],
+  ['environment'],
   'monitoring inputs'
 );
 same(
@@ -72,7 +72,22 @@ same(
   'operational-monitoring-${{ inputs.environment }}',
   'monitoring lock'
 );
-same(monitoring.jobs.monitoring.if, "github.ref == 'refs/heads/main'", 'monitoring main rule');
+const monitoringBranch = monitoring.jobs.monitoring.steps.find(
+  (step) => step.name === 'Verify environment branch'
+);
+if (
+  monitoring.jobs.monitoring.if !== undefined ||
+  !monitoringBranch?.run.includes(
+    'staging) expected_ref=refs/heads/1a-staging'
+  ) ||
+  !monitoringBranch.run.includes('prod) expected_ref=refs/heads/main') ||
+  !monitoringBranch.run.includes('"$GITHUB_REF" != "$expected_ref"')
+)
+  throw new Error('Monitoring environment branch guards are missing.');
+const monitoringCheckout = monitoring.jobs.monitoring.steps.find(
+  (step) => step.uses?.startsWith('actions/checkout@')
+);
+same(monitoringCheckout?.with?.ref, '${{ github.sha }}', 'monitoring source');
 const controlledFailure = monitoring.jobs.monitoring.steps.find(
   (step) => step.name === 'Apply the controlled sample monitoring switch'
 );
