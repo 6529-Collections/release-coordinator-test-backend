@@ -5,7 +5,7 @@ Small executable programs, locked npm builds, short-lived GitHub Actions artifac
 The repository also exposes the Coordinator-facing workflow contract used by the real backend:
 
 - `deploy.yml` keeps the real `Deploy a service` workflow name, environment and service inputs, specialist inputs, branch rules, concurrency groups and job name.
-- `deploy-operational-monitoring.yml` keeps the real monitoring workflow name, `environment` and `commit_sha` inputs, main-only rule and concurrency group.
+- `deploy-operational-monitoring.yml` keeps the real monitoring workflow name, its sole `environment` input, staging-from-`1a-staging` and prod-from-`main` rules, and concurrency group. It uses the dispatch run's commit.
 - Both workflows build the small sample packages and publish `fake-deployment-evidence-v1` artifacts tied to the exact source commit and workflow run.
 
 The monitoring workflow also honors the sample package's reviewed

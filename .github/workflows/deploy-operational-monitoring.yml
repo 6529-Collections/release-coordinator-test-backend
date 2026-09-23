@@ -7,10 +7,6 @@ on:
         required: true
         type: choice
         options: [staging, prod]
-      commit_sha:
-        description: Full merged commit SHA to deploy
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -21,33 +17,43 @@ concurrency:
 
 jobs:
   monitoring:
-    if: github.ref == 'refs/heads/main'
     environment: monitoring-${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out the exact merged commit
+      - name: Verify environment branch
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          case "$DEPLOY_ENVIRONMENT" in
+            prod) expected_ref=refs/heads/main ;;
+            staging) expected_ref=refs/heads/1a-staging ;;
+            *) echo "Unsupported monitoring environment" >&2; exit 1 ;;
+          esac
+          if [[ "$GITHUB_REF" != "$expected_ref" ]]; then
+            echo "Monitoring $DEPLOY_ENVIRONMENT must run from $expected_ref" >&2
+            exit 1
+          fi
+      - name: Check out the dispatch commit
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
-          ref: ${{ inputs.commit_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify the exact merged commit
+      - name: Verify the dispatch commit
         env:
-          EXPECTED_SHA: ${{ inputs.commit_sha }}
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          git fetch --no-tags origin main:refs/remotes/origin/main
-          git merge-base --is-ancestor "$EXPECTED_SHA" origin/main
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: "22.17.1"
       - name: Build the isolated sample monitoring artifact
         working-directory: ops/monitoring
         env:
-          SANDBOX_SOURCE_COMMIT: ${{ inputs.commit_sha }}
+          SANDBOX_SOURCE_COMMIT: ${{ github.sha }}
         run: |
           npm ci --ignore-scripts
           npm run build
@@ -58,7 +64,7 @@ jobs:
       - name: Record the fake monitoring deployment
         env:
           ENVIRONMENT: ${{ inputs.environment }}
-          SOURCE_SHA: ${{ inputs.commit_sha }}
+          SOURCE_SHA: ${{ github.sha }}
         run: |
           mkdir -p fake-deployment/dist
           cp -R ops/monitoring/dist/. fake-deployment/dist/
