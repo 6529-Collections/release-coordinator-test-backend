@@ -1,7 +1,7 @@
 {
   "services": [
     {
-      "name": "api",
+      "name": "api-v2",
       "allowed_environments": [
         "staging",
         "prod"
